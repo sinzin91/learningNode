@@ -2,7 +2,7 @@
 
 function compute_intersection(arr1, arr2, callback) {
 	// let's break up the bigger of the two arrays
-	var bigger = arr1.length > arr2.length ? arr1 : arr2;
+	var bigger = arr1.length > arr2.length ? arr1 : arr2; // if arr1 is bigger than arr2, pick arr1
 	var smaller = bigger == arr1 ? arr2 : arr1; // if arr1 is bigger, pick arr2, otherwise pick arr1
 	var biglen = bigger.length;
 	var smlen = smaller.length;
