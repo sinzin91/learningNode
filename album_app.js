@@ -1,6 +1,7 @@
 var http = require('http'),
 	fs = require('fs'),
-	url = require('url');
+	url = require('url'),
+	qs = require('querystring');
 
 function load_album_list(callback) {
 	// we will just assume that any directory in our 'albums'
@@ -93,23 +94,35 @@ function load_album(album_name, page, page_size, callback) {
 
 function handle_incoming_request(req, res) {
 	
-	// parse the query params into an object and get the path
-	// without them. (2nd param true = parse the params).
-	req.parsed_url = url.parse(req.url, true);
-	var core_url = req.parsed_url.pathname;
+	var body = '';
+	req.on(
+		'readable',
+		function () {
+			var d = req.read();
+			if (d) {
+				if (typeof d == 'string') {
+					body += d;
+				} else if (typeof d == 'object' && d instanceof Buffer) {
+					body += d.toString('utf8');
+				}
+			}
+		}
+	);
 
-	// test this fixed url to see what they're asking for
-	if (core_url == '/album.json' && req.method.toLowerCase() == 'get') {
-		handle_list_albums(req, res);
-	} else if (core_url.substr(core_url.length - 12) == '/rename.json' && req.method.toLowerCase() = 'post') {
-		handle_rename_album(req, res);
-	} else if (core_url.substr(0, 7) == '/albums'
-				&& core_url.substr(core_url.length - 5) == '.json'
-				&& req.method.toLowerCase() == 'get') {
-		handle_get_album(req, res);
-	} else {
-		send_failure(res, 404, invalid_resource());
-	}
+	req.on(
+		'end',
+		function () {
+			if (req.method.toLowerCase() == 'post') {
+				var POST_data = qs.parse(body);
+				console.log(POST_data);
+			}
+			res.writeHead(200, { "Content-Type" : "application/json"});
+			res.end(JSON.stringify( { error: null }) + "\n");
+		}
+	);
+
+	var s = http.createServer(handle_incoming_request);
+	s.listen(8080);
 }
 
 function handle_list_albums(req, res) {
