@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Debug</title>
+</head>
+<body>
+	<script type="text/javascript">
+	function debug (msg) {
+		// Find the debugging section of the document, looking at HTML id attributes
+		var log = document.getElementById("debuglog");
+
+		// If no element with the id "debuglog" exits, create one.
+		if (!log) {
+			log = document.createElement("div");
+			log.id = "debuglog";
+			log.innerHTML = "<h1>Debug Log</h1>"; 
+			document.body.appendChild(log);
+		}
+
+		// Now wrap the message in its own <pre> and append it to the log
+		var pre = document.createElement("pre");	// Create a <pre> tag
+		var text = document.createTextNode(msg);	// Wrap msg in a text node
+		pre.appendChild(text);						// Add text in the <pre>
+		log.appendChild(pre);						// Add <pre> to the log
+	}
+	</script>
+</body>
+</html>
